@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  SALES_MANAGER
+  SALES_REP
+}
+
+enum DealStatus {
+  NEW
+  CONTACTED
+  NEGOTIATING
+  WON
+  LOST
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  users     User[]
+  customers Customer[]
+  leads     Lead[]
+  deals     Deal[]
+}
+
+model User {
+  id             String       @id @default(cuid())
+  email          String       @unique
+  password       String
+  name           String
+  role           Role         @default(SALES_REP)
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  assignedDeals  Deal[]
+}
+
+model Customer {
+  id             String       @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  deals          Deal[]
+}
+
+model Lead {
+  id             String       @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  source         String?
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+}
+
+model Deal {
+  id             String       @id @default(cuid())
+  title          String
+  value          Float        @default(0)
+  status         DealStatus   @default(NEW)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  customerId     String
+
+  assignedTo     User?        @relation(fields: [assignedToId], references: [id])
+  assignedToId   String?
+}
