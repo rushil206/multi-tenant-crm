@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get("invite");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +25,13 @@ export default function SignupPage() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, organizationName }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          organizationName: inviteToken ? undefined : organizationName,
+          inviteToken: inviteToken || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -33,7 +42,6 @@ export default function SignupPage() {
         return;
       }
 
-      // Signup successful — send them to the login page
       router.push("/login");
     } catch (err) {
       setError("Could not connect to the server");
@@ -44,7 +52,15 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-gray-900">Create your account</h1>
+        <h1 className="text-2xl font-bold mb-2 text-gray-900">
+          {inviteToken ? "Join your team" : "Create your account"}
+        </h1>
+
+        {inviteToken && (
+          <p className="text-sm text-blue-700 bg-blue-50 p-3 rounded mb-4">
+            You've been invited to join an organization. Fill in your details below.
+          </p>
+        )}
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
@@ -53,19 +69,21 @@ export default function SignupPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Organization Name
-            </label>
-            <input
-              type="text"
-              value={organizationName}
-              onChange={(e) => setOrganizationName(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
-              placeholder="Acme Inc."
-              required
-            />
-          </div>
+          {!inviteToken && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Organization Name
+              </label>
+              <input
+                type="text"
+                value={organizationName}
+                onChange={(e) => setOrganizationName(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
+                placeholder="Acme Inc."
+                required
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -126,5 +144,13 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <SignupForm />
+    </Suspense>
   );
 }

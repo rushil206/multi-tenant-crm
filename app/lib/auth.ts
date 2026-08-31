@@ -27,3 +27,6 @@ export function getUserFromRequest(request: NextRequest): TokenPayload | null {
     return null;
   }
 }
+export function requireRole(user: TokenPayload, allowedRoles: string[]): boolean {
+  return allowedRoles.includes(user.role);
+}

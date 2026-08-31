@@ -7,17 +7,15 @@ const prisma = new PrismaClient();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password, organizationName } = body;
+    const { name, email, password, organizationName, inviteToken } = body;
 
-    // Basic validation
-    if (!name || !email || !password || !organizationName) {
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: "Name, email, and password are required" },
         { status: 400 }
       );
     }
 
-    // Check if a user with this email already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
@@ -26,10 +24,66 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash the password (never store it as plain text)
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the Organization AND the first User (who becomes OWNER) together
+    // CASE 1: Signing up via an invitation — join an existing organization
+    if (inviteToken) {
+      const invitation = await prisma.invitation.findUnique({
+        where: { token: inviteToken },
+      });
+
+      if (!invitation) {
+        return NextResponse.json(
+          { error: "Invalid invitation link" },
+          { status: 400 }
+        );
+      }
+
+      if (invitation.used) {
+        return NextResponse.json(
+          { error: "This invitation has already been used" },
+          { status: 400 }
+        );
+      }
+
+      if (invitation.expiresAt < new Date()) {
+        return NextResponse.json(
+          { error: "This invitation has expired" },
+          { status: 400 }
+        );
+      }
+
+      // Create the user inside the EXISTING organization, with the role from the invite
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+          role: invitation.role,
+          organizationId: invitation.organizationId,
+        },
+      });
+
+      // Mark the invitation as used so it can't be reused
+      await prisma.invitation.update({
+        where: { id: invitation.id },
+        data: { used: true },
+      });
+
+      return NextResponse.json(
+        { message: "Account created and joined organization", userId: user.id },
+        { status: 201 }
+      );
+    }
+
+    // CASE 2: Regular signup — create a brand NEW organization (existing behavior)
+    if (!organizationName) {
+      return NextResponse.json(
+        { error: "Organization name is required" },
+        { status: 400 }
+      );
+    }
+
     const organization = await prisma.organization.create({
       data: {
         name: organizationName,

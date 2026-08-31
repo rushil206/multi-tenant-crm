@@ -32,6 +32,7 @@ model Organization {
   customers Customer[]
   leads     Lead[]
   deals     Deal[]
+  invitations Invitation[]
 }
 
 model User {
@@ -89,4 +90,16 @@ model Deal {
 
   assignedTo     User?        @relation(fields: [assignedToId], references: [id])
   assignedToId   String?
+}
+model Invitation {
+  id             String       @id @default(cuid())
+  email          String
+  role           Role         @default(SALES_REP)
+  token          String       @unique
+  used           Boolean      @default(false)
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
 }
