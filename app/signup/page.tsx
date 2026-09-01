@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -50,98 +50,104 @@ function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-2 text-gray-900">
-          {inviteToken ? "Join your team" : "Create your account"}
+    <div className="min-h-screen flex items-center justify-center bg-ink px-4">
+      <div className="w-full max-w-sm">
+        <h1 className="font-serif-display text-3xl text-gold text-center mb-8">
+          Ledger
         </h1>
 
-        {inviteToken && (
-          <p className="text-sm text-blue-700 bg-blue-50 p-3 rounded mb-4">
-            You've been invited to join an organization. Fill in your details below.
-          </p>
-        )}
+        <div className="bg-paper p-8 rounded-sm">
+          <h2 className="text-lg font-medium text-ink mb-1">
+            {inviteToken ? "Join your team" : "Create your account"}
+          </h2>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">
-            {error}
-          </div>
-        )}
+          {inviteToken && (
+            <p className="text-sm text-primary bg-primary/5 border border-primary/20 p-3 rounded-sm mb-4 mt-3">
+              You&apos;ve been invited to join an organization.
+            </p>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!inviteToken && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Organization Name
-              </label>
-              <input
-                type="text"
-                value={organizationName}
-                onChange={(e) => setOrganizationName(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
-                placeholder="Acme Inc."
-                required
-              />
+          {error && (
+            <div className="mt-4 mb-4 p-3 bg-danger/10 text-danger rounded-sm text-sm">
+              {error}
             </div>
           )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Your Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
-              placeholder="Rushil Sharma"
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4 mt-5">
+            {!inviteToken && (
+              <div>
+                <label className="block text-xs text-muted uppercase tracking-wide mb-1.5">
+                  Organization Name
+                </label>
+                <input
+                  type="text"
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
+                  className="w-full border border-line rounded-sm px-3 py-2 text-ink bg-white focus:outline-none focus:border-primary"
+                  placeholder="Acme Inc."
+                  required
+                />
+              </div>
+            )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
-              placeholder="you@example.com"
-              required
-            />
-          </div>
+            <div>
+              <label className="block text-xs text-muted uppercase tracking-wide mb-1.5">
+                Your Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full border border-line rounded-sm px-3 py-2 text-ink bg-white focus:outline-none focus:border-primary"
+                placeholder="Rushil Sharma"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-900"
-              placeholder="At least 8 characters"
-              required
-            />
-          </div>
+            <div>
+              <label className="block text-xs text-muted uppercase tracking-wide mb-1.5">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border border-line rounded-sm px-3 py-2 text-ink bg-white focus:outline-none focus:border-primary"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-          >
-            {loading ? "Creating account..." : "Sign Up"}
-          </button>
-        </form>
+            <div>
+              <label className="block text-xs text-muted uppercase tracking-wide mb-1.5">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-line rounded-sm px-3 py-2 text-ink bg-white focus:outline-none focus:border-primary"
+                placeholder="At least 8 characters"
+                required
+              />
+            </div>
 
-        <p className="mt-4 text-sm text-gray-600 text-center">
-          Already have an account?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
-            Log in
-          </Link>
-        </p>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-paper py-2.5 rounded-sm hover:bg-primary-dark transition-colors disabled:opacity-50"
+            >
+              {loading ? "Creating account..." : "Sign Up"}
+            </button>
+          </form>
+
+          <p className="mt-5 text-sm text-muted text-center">
+            Already have an account?{" "}
+            <Link href="/login" className="text-primary hover:underline">
+              Log in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -149,7 +155,7 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-ink" />}>
       <SignupForm />
     </Suspense>
   );

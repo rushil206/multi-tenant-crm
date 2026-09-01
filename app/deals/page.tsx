@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authFetch } from "@/app/lib/api";
+import Sidebar from "@/app/components/Sidebar";
 
 type Customer = { id: string; name: string };
 type Deal = {
@@ -15,6 +16,14 @@ type Deal = {
 };
 
 const STATUS_OPTIONS = ["NEW", "CONTACTED", "NEGOTIATING", "WON", "LOST"];
+
+const statusStyles: Record<string, string> = {
+  NEW: "bg-ink/5 text-muted",
+  CONTACTED: "bg-primary/10 text-primary",
+  NEGOTIATING: "bg-gold/20 text-ink",
+  WON: "bg-primary text-paper",
+  LOST: "bg-danger/10 text-danger",
+};
 
 export default function DealsPage() {
   const router = useRouter();
@@ -58,7 +67,6 @@ export default function DealsPage() {
     }
     setSubmitting(true);
 
-
     const res = await authFetch("/api/deals", {
       method: "POST",
       body: JSON.stringify({
@@ -77,7 +85,7 @@ export default function DealsPage() {
     setSubmitting(false);
   }
 
-   async function handleStatusChange(dealId: string, newStatus: string) {
+  async function handleStatusChange(dealId: string, newStatus: string) {
     const res = await authFetch(`/api/deals/${dealId}`, {
       method: "PATCH",
       body: JSON.stringify({ status: newStatus }),
@@ -88,39 +96,15 @@ export default function DealsPage() {
     }
   }
 
-  const statusColors: Record<string, string> = {
-    NEW: "bg-gray-100 text-gray-700",
-    CONTACTED: "bg-blue-100 text-blue-700",
-    NEGOTIATING: "bg-yellow-100 text-yellow-700",
-    WON: "bg-green-100 text-green-700",
-    LOST: "bg-red-100 text-red-700",
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <div className="flex gap-6 items-center">
-          <h1 className="text-xl font-bold text-gray-900">CRM</h1>
-          <Link href="/dashboard" className="text-sm text-gray-600 hover:underline">
-            Dashboard
-          </Link>
-          <Link href="/leads" className="text-sm text-gray-600 hover:underline">
-            Leads
-          </Link>
-          <Link href="/customers" className="text-sm text-gray-600 hover:underline">
-            Customers
-          </Link>
-          <Link href="/deals" className="text-sm text-blue-600 font-medium">
-            Deals
-          </Link>
-        </div>
-      </nav>
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-      <main className="p-6 max-w-4xl mx-auto">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Deals</h2>
+      <main className="flex-1 p-10 max-w-4xl">
+        <h2 className="font-serif-display text-3xl text-ink mb-6">Deals</h2>
 
         {customers.length === 0 ? (
-          <p className="text-sm text-amber-700 bg-amber-50 p-3 rounded mb-4">
+          <p className="text-sm text-gold bg-gold/10 border border-gold/30 p-3 rounded-sm mb-6">
             You need at least one customer before creating a deal.{" "}
             <Link href="/customers" className="underline">
               Add one here
@@ -130,14 +114,14 @@ export default function DealsPage() {
         ) : (
           <form
             onSubmit={handleAddDeal}
-            className="bg-white p-4 rounded-lg shadow mb-6 grid grid-cols-2 gap-3"
+            className="bg-white border border-line rounded-sm p-5 mb-8 grid grid-cols-2 gap-3"
           >
             <input
               type="text"
               placeholder="Deal title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+              className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
               required
             />
             <input
@@ -145,12 +129,12 @@ export default function DealsPage() {
               placeholder="Value ($)"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+              className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
             />
             <select
               value={customerId}
               onChange={(e) => setCustomerId(e.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 text-gray-900 col-span-2"
+              className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary col-span-2"
               required
             >
               <option value="">Select a customer...</option>
@@ -163,7 +147,7 @@ export default function DealsPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="col-span-2 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+              className="col-span-2 bg-primary text-paper py-2 rounded-sm hover:bg-primary-dark transition-colors disabled:opacity-50"
             >
               {submitting ? "Adding..." : "Add Deal"}
             </button>
@@ -171,33 +155,33 @@ export default function DealsPage() {
         )}
 
         {loading ? (
-          <p className="text-gray-500">Loading deals...</p>
+          <p className="text-muted">Loading deals...</p>
         ) : deals.length === 0 ? (
-          <p className="text-gray-500">No deals yet.</p>
+          <p className="text-muted">No deals yet.</p>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white border border-line rounded-sm overflow-hidden">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-100 text-gray-700">
+              <thead className="border-b border-line">
                 <tr>
-                  <th className="px-4 py-2">Title</th>
-                  <th className="px-4 py-2">Customer</th>
-                  <th className="px-4 py-2">Value</th>
-                  <th className="px-4 py-2">Status</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Title</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Customer</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Value</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {deals.map((d) => (
-                  <tr key={d.id} className="border-t">
-                    <td className="px-4 py-2 text-gray-900">{d.title}</td>
-                    <td className="px-4 py-2 text-gray-600">{d.customer?.name}</td>
-                    <td className="px-4 py-2 text-gray-600">
+                  <tr key={d.id} className="border-t border-line">
+                    <td className="px-4 py-3 text-ink">{d.title}</td>
+                    <td className="px-4 py-3 text-muted">{d.customer?.name}</td>
+                    <td className="px-4 py-3 font-serif-display text-ink">
                       ${d.value.toLocaleString()}
                     </td>
-                                        <td className="px-4 py-2">
+                    <td className="px-4 py-3">
                       <select
                         value={d.status}
                         onChange={(e) => handleStatusChange(d.id, e.target.value)}
-                        className={`px-2 py-1 rounded text-xs font-medium border-0 cursor-pointer ${statusColors[d.status]}`}
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusStyles[d.status]}`}
                       >
                         {STATUS_OPTIONS.map((s) => (
                           <option key={s} value={s}>

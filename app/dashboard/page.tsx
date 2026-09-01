@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authFetch } from "@/app/lib/api";
+import Sidebar from "@/app/components/Sidebar";
 
 type User = {
   id: string;
@@ -48,68 +49,37 @@ export default function DashboardPage() {
     }
   }
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    router.push("/login");
-  }
-
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-paper">
+        <p className="text-muted">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <div className="flex gap-6 items-center">
-          <h1 className="text-xl font-bold text-gray-900">CRM</h1>
-          <a href="/dashboard" className="text-sm text-blue-600 font-medium">
-            Dashboard
-          </a>
-          <a href="/leads" className="text-sm text-gray-600 hover:underline">
-            Leads
-          </a>
-          <a href="/customers" className="text-sm text-gray-600 hover:underline">
-            Customers
-          </a>
-          <a href="/deals" className="text-sm text-gray-600 hover:underline">
-            Deals
-          </a>
-          <a href="/settings" className="text-sm text-gray-600 hover:underline">
-            Settings
-          </a>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="text-sm text-red-600 hover:underline"
-        >
-          Log out
-        </button>
-      </nav>
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-      <main className="p-6 max-w-5xl mx-auto">
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">
-          Welcome, {user?.name} 👋
+      <main className="flex-1 p-10">
+        <h2 className="font-serif-display text-3xl text-ink mb-1">
+          Welcome, {user?.name}
         </h2>
-        <p className="text-gray-500 text-sm mb-6">
+        <p className="text-muted text-sm mb-8">
           {user?.role.replace("_", " ")} · {user?.email}
         </p>
 
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <StatCard label="Total Leads" value={stats.totalLeads} />
             <StatCard label="Total Customers" value={stats.totalCustomers} />
             <StatCard label="Total Deals" value={stats.totalDeals} />
-            <StatCard label="Deals Won" value={stats.dealsWon} color="text-green-600" />
-            <StatCard label="Deals Lost" value={stats.dealsLost} color="text-red-600" />
+            <StatCard label="Deals Won" value={stats.dealsWon} accent="text-primary" />
+            <StatCard label="Deals Lost" value={stats.dealsLost} accent="text-danger" />
             <StatCard
               label="Open Pipeline Value"
               value={`$${stats.openPipelineValue.toLocaleString()}`}
-              color="text-blue-600"
+              accent="text-gold"
             />
           </div>
         )}
@@ -121,16 +91,16 @@ export default function DashboardPage() {
 function StatCard({
   label,
   value,
-  color = "text-gray-900",
+  accent = "text-ink",
 }: {
   label: string;
   value: string | number;
-  color?: string;
+  accent?: string;
 }) {
   return (
-    <div className="bg-white rounded-lg shadow p-5">
-      <p className="text-sm text-gray-500 mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+    <div className="bg-white border border-line rounded-sm p-5 border-t-2 border-t-primary">
+      <p className="text-xs text-muted uppercase tracking-wide mb-2">{label}</p>
+      <p className={`font-serif-display text-3xl ${accent}`}>{value}</p>
     </div>
   );
 }

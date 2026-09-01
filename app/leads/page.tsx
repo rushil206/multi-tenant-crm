@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { authFetch } from "@/app/lib/api";
+import Sidebar from "@/app/components/Sidebar";
 
 type Lead = {
   id: string;
@@ -19,7 +19,6 @@ export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Form fields for adding a new lead
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -55,47 +54,28 @@ export default function LeadsPage() {
       setEmail("");
       setPhone("");
       setSource("");
-      await loadLeads(); // refresh the list
+      await loadLeads();
     }
     setSubmitting(false);
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <div className="flex gap-6 items-center">
-          <h1 className="text-xl font-bold text-gray-900">CRM</h1>
-          <Link href="/dashboard" className="text-sm text-gray-600 hover:underline">
-            Dashboard
-          </Link>
-          <Link href="/leads" className="text-sm text-blue-600 font-medium">
-            Leads
-          </Link>
-          <Link href="/customers" className="text-sm text-gray-600 hover:underline">
-            Customers
-          </Link>
-                    <Link href="/deals" className="text-sm text-gray-600 hover:underline">
-            Deals
-          </Link>
-          <Link href="/settings" className="text-sm text-gray-600 hover:underline">
-            Settings
-          </Link>
-        </div>
-      </nav>
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-      <main className="p-6 max-w-4xl mx-auto">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Leads</h2>
+      <main className="flex-1 p-10 max-w-4xl">
+        <h2 className="font-serif-display text-3xl text-ink mb-6">Leads</h2>
 
         <form
           onSubmit={handleAddLead}
-          className="bg-white p-4 rounded-lg shadow mb-6 grid grid-cols-2 gap-3"
+          className="bg-white border border-line rounded-sm p-5 mb-8 grid grid-cols-2 gap-3"
         >
           <input
             type="text"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+            className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
             required
           />
           <input
@@ -103,53 +83,53 @@ export default function LeadsPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+            className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
           />
           <input
             type="text"
             placeholder="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+            className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
           />
           <input
             type="text"
             placeholder="Source (e.g. Website, Referral)"
             value={source}
             onChange={(e) => setSource(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+            className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
           />
           <button
             type="submit"
             disabled={submitting}
-            className="col-span-2 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="col-span-2 bg-primary text-paper py-2 rounded-sm hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
             {submitting ? "Adding..." : "Add Lead"}
           </button>
         </form>
 
         {loading ? (
-          <p className="text-gray-500">Loading leads...</p>
+          <p className="text-muted">Loading leads...</p>
         ) : leads.length === 0 ? (
-          <p className="text-gray-500">No leads yet. Add your first one above.</p>
+          <p className="text-muted">No leads yet. Add your first one above.</p>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white border border-line rounded-sm overflow-hidden">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-100 text-gray-700">
+              <thead className="border-b border-line">
                 <tr>
-                  <th className="px-4 py-2">Name</th>
-                  <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Phone</th>
-                  <th className="px-4 py-2">Source</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Name</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Email</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Phone</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Source</th>
                 </tr>
               </thead>
               <tbody>
                 {leads.map((lead) => (
-                  <tr key={lead.id} className="border-t">
-                    <td className="px-4 py-2 text-gray-900">{lead.name}</td>
-                    <td className="px-4 py-2 text-gray-600">{lead.email || "-"}</td>
-                    <td className="px-4 py-2 text-gray-600">{lead.phone || "-"}</td>
-                    <td className="px-4 py-2 text-gray-600">{lead.source || "-"}</td>
+                  <tr key={lead.id} className="border-t border-line">
+                    <td className="px-4 py-3 text-ink">{lead.name}</td>
+                    <td className="px-4 py-3 text-muted">{lead.email || "—"}</td>
+                    <td className="px-4 py-3 text-muted">{lead.phone || "—"}</td>
+                    <td className="px-4 py-3 text-muted">{lead.source || "—"}</td>
                   </tr>
                 ))}
               </tbody>

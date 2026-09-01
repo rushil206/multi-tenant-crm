@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { authFetch } from "@/app/lib/api";
+import Sidebar from "@/app/components/Sidebar";
 
 type Member = {
   id: string;
@@ -80,66 +80,46 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <div className="flex gap-6 items-center">
-          <h1 className="text-xl font-bold text-gray-900">CRM</h1>
-          <Link href="/dashboard" className="text-sm text-gray-600 hover:underline">
-            Dashboard
-          </Link>
-          <Link href="/leads" className="text-sm text-gray-600 hover:underline">
-            Leads
-          </Link>
-          <Link href="/customers" className="text-sm text-gray-600 hover:underline">
-            Customers
-          </Link>
-          <Link href="/deals" className="text-sm text-gray-600 hover:underline">
-            Deals
-          </Link>
-          <Link href="/settings" className="text-sm text-blue-600 font-medium">
-            Settings
-          </Link>
-        </div>
-      </nav>
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-      <main className="p-6 max-w-3xl mx-auto">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Team Settings</h2>
+      <main className="flex-1 p-10 max-w-3xl">
+        <h2 className="font-serif-display text-3xl text-ink mb-6">Team Settings</h2>
 
         {loading ? (
-          <p className="text-gray-500">Loading...</p>
+          <p className="text-muted">Loading...</p>
         ) : forbidden ? (
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <p className="text-gray-700 font-medium">Access restricted</p>
-            <p className="text-gray-500 text-sm mt-1">
+          <div className="bg-white border border-line rounded-sm p-8 text-center">
+            <p className="text-ink font-medium">Access restricted</p>
+            <p className="text-muted text-sm mt-1">
               Only Owners and Admins can view team settings.
             </p>
           </div>
         ) : (
           <>
-            {/* Invite form */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h3 className="font-medium text-gray-900 mb-3">Invite a teammate</h3>
+            <div className="bg-white border border-line rounded-sm p-5 mb-8">
+              <h3 className="font-medium text-ink mb-3">Invite a teammate</h3>
 
               {inviteError && (
-                <div className="mb-3 p-3 bg-red-100 text-red-700 rounded text-sm">
+                <div className="mb-3 p-3 bg-danger/10 text-danger rounded-sm text-sm">
                   {inviteError}
                 </div>
               )}
 
               {inviteLink && (
-                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded text-sm">
-                  <p className="text-green-800 mb-2">
+                <div className="mb-3 p-3 bg-primary/5 border border-primary/20 rounded-sm text-sm">
+                  <p className="text-primary mb-2">
                     Invite created! Share this link with them:
                   </p>
                   <div className="flex gap-2 items-center">
                     <input
                       readOnly
                       value={inviteLink}
-                      className="flex-1 border border-gray-300 rounded px-2 py-1 text-xs text-gray-700 bg-gray-50"
+                      className="flex-1 border border-line rounded-sm px-2 py-1 text-xs text-muted bg-paper"
                     />
                     <button
                       onClick={copyLink}
-                      className="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-900"
+                      className="text-xs bg-ink text-paper px-3 py-1.5 rounded-sm hover:bg-primary-dark transition-colors"
                     >
                       Copy
                     </button>
@@ -153,13 +133,13 @@ export default function SettingsPage() {
                   placeholder="teammate@example.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="flex-1 border border-gray-300 rounded px-3 py-2 text-gray-900"
+                  className="flex-1 border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
                   required
                 />
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value)}
-                  className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+                  className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
                 >
                   {ROLE_OPTIONS.map((r) => (
                     <option key={r} value={r}>
@@ -170,31 +150,28 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   disabled={inviting}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                  className="bg-primary text-paper px-4 py-2 rounded-sm hover:bg-primary-dark transition-colors disabled:opacity-50"
                 >
                   {inviting ? "Sending..." : "Invite"}
                 </button>
               </form>
             </div>
 
-            {/* Team member list */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white border border-line rounded-sm overflow-hidden">
               <table className="w-full text-sm text-left">
-                <thead className="bg-gray-100 text-gray-700">
+                <thead className="border-b border-line">
                   <tr>
-                    <th className="px-4 py-2">Name</th>
-                    <th className="px-4 py-2">Email</th>
-                    <th className="px-4 py-2">Role</th>
+                    <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Name</th>
+                    <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Email</th>
+                    <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Role</th>
                   </tr>
                 </thead>
                 <tbody>
                   {members?.map((m) => (
-                    <tr key={m.id} className="border-t">
-                      <td className="px-4 py-2 text-gray-900">{m.name}</td>
-                      <td className="px-4 py-2 text-gray-600">{m.email}</td>
-                      <td className="px-4 py-2 text-gray-600">
-                        {m.role.replace("_", " ")}
-                      </td>
+                    <tr key={m.id} className="border-t border-line">
+                      <td className="px-4 py-3 text-ink">{m.name}</td>
+                      <td className="px-4 py-3 text-muted">{m.email}</td>
+                      <td className="px-4 py-3 text-muted">{m.role.replace("_", " ")}</td>
                     </tr>
                   ))}
                 </tbody>

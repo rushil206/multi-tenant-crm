@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { authFetch } from "@/app/lib/api";
+import Sidebar from "@/app/components/Sidebar";
 
 type Customer = {
   id: string;
@@ -57,41 +57,22 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <div className="flex gap-6 items-center">
-          <h1 className="text-xl font-bold text-gray-900">CRM</h1>
-          <Link href="/dashboard" className="text-sm text-gray-600 hover:underline">
-            Dashboard
-          </Link>
-          <Link href="/leads" className="text-sm text-gray-600 hover:underline">
-            Leads
-          </Link>
-          <Link href="/customers" className="text-sm text-blue-600 font-medium">
-            Customers
-          </Link>
-                    <Link href="/deals" className="text-sm text-gray-600 hover:underline">
-            Deals
-          </Link>
-          <Link href="/settings" className="text-sm text-gray-600 hover:underline">
-            Settings
-          </Link>
-        </div>
-      </nav>
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-      <main className="p-6 max-w-4xl mx-auto">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Customers</h2>
+      <main className="flex-1 p-10 max-w-4xl">
+        <h2 className="font-serif-display text-3xl text-ink mb-6">Customers</h2>
 
         <form
           onSubmit={handleAddCustomer}
-          className="bg-white p-4 rounded-lg shadow mb-6 grid grid-cols-2 gap-3"
+          className="bg-white border border-line rounded-sm p-5 mb-8 grid grid-cols-2 gap-3"
         >
           <input
             type="text"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+            className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
             required
           />
           <input
@@ -99,44 +80,44 @@ export default function CustomersPage() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-gray-900"
+            className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary"
           />
           <input
             type="text"
             placeholder="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-gray-900 col-span-2"
+            className="border border-line rounded-sm px-3 py-2 text-ink bg-paper focus:outline-none focus:border-primary col-span-2"
           />
           <button
             type="submit"
             disabled={submitting}
-            className="col-span-2 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="col-span-2 bg-primary text-paper py-2 rounded-sm hover:bg-primary-dark transition-colors disabled:opacity-50"
           >
             {submitting ? "Adding..." : "Add Customer"}
           </button>
         </form>
 
         {loading ? (
-          <p className="text-gray-500">Loading customers...</p>
+          <p className="text-muted">Loading customers...</p>
         ) : customers.length === 0 ? (
-          <p className="text-gray-500">No customers yet. Add your first one above.</p>
+          <p className="text-muted">No customers yet. Add your first one above.</p>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white border border-line rounded-sm overflow-hidden">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-100 text-gray-700">
+              <thead className="border-b border-line">
                 <tr>
-                  <th className="px-4 py-2">Name</th>
-                  <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Phone</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Name</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Email</th>
+                  <th className="px-4 py-3 text-xs text-muted uppercase tracking-wide font-medium">Phone</th>
                 </tr>
               </thead>
               <tbody>
                 {customers.map((c) => (
-                  <tr key={c.id} className="border-t">
-                    <td className="px-4 py-2 text-gray-900">{c.name}</td>
-                    <td className="px-4 py-2 text-gray-600">{c.email || "-"}</td>
-                    <td className="px-4 py-2 text-gray-600">{c.phone || "-"}</td>
+                  <tr key={c.id} className="border-t border-line">
+                    <td className="px-4 py-3 text-ink">{c.name}</td>
+                    <td className="px-4 py-3 text-muted">{c.email || "—"}</td>
+                    <td className="px-4 py-3 text-muted">{c.phone || "—"}</td>
                   </tr>
                 ))}
               </tbody>
