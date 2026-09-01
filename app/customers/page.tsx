@@ -70,8 +70,11 @@ export default function CustomersPage() {
           <Link href="/customers" className="text-sm text-blue-600 font-medium">
             Customers
           </Link>
-          <Link href="/deals" className="text-sm text-gray-600 hover:underline">
+                    <Link href="/deals" className="text-sm text-gray-600 hover:underline">
             Deals
+          </Link>
+          <Link href="/settings" className="text-sm text-gray-600 hover:underline">
+            Settings
           </Link>
         </div>
       </nav>

@@ -58,6 +58,7 @@ export default function DealsPage() {
     }
     setSubmitting(true);
 
+
     const res = await authFetch("/api/deals", {
       method: "POST",
       body: JSON.stringify({
@@ -74,6 +75,17 @@ export default function DealsPage() {
       await loadData();
     }
     setSubmitting(false);
+  }
+
+   async function handleStatusChange(dealId: string, newStatus: string) {
+    const res = await authFetch(`/api/deals/${dealId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: newStatus }),
+    });
+
+    if (res.ok) {
+      await loadData();
+    }
   }
 
   const statusColors: Record<string, string> = {
@@ -181,12 +193,18 @@ export default function DealsPage() {
                     <td className="px-4 py-2 text-gray-600">
                       ${d.value.toLocaleString()}
                     </td>
-                    <td className="px-4 py-2">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${statusColors[d.status]}`}
+                                        <td className="px-4 py-2">
+                      <select
+                        value={d.status}
+                        onChange={(e) => handleStatusChange(d.id, e.target.value)}
+                        className={`px-2 py-1 rounded text-xs font-medium border-0 cursor-pointer ${statusColors[d.status]}`}
                       >
-                        {d.status}
-                      </span>
+                        {STATUS_OPTIONS.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
                     </td>
                   </tr>
                 ))}
